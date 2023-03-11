@@ -38,7 +38,7 @@ class MNISTClassifier(nn.Module):
 
 # %% Training parameters
 
-num_epochs = 1
+num_epochs = 10
 batch_size = { "train": 64, "test": 1000 }
 learning_rate = 0.01
 momentum = 0.5
@@ -53,9 +53,9 @@ if __name__ == "__main__":
     # Get parallel run data
     rank_id = int(os.environ["RANK"])
     num_ranks = int(os.environ["WORLD_SIZE"])
-    master_addr = "my-master" # os.environ["MASTER_ADDR"]
+    master_addr = "mnist-training-master-0" # os.environ["MASTER_ADDR"]
+    print(os.environ["MASTER_ADDR"],"does not work. Instead using master_addr")
     master_port = os.environ["MASTER_PORT"]
-
     print("rank_id",rank_id,"num_ranks",num_ranks,"master_addr",master_addr,"master_port",master_port)
     torch.manual_seed(rank_id)
     
