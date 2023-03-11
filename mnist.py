@@ -48,14 +48,16 @@ seed = 0
 # %% Main program
 
 if __name__ == "__main__":
+    print("Choosing backend")
     # Choose backend to be used
     if torch.cuda.is_available():
-        dist.init_process_group("nccl")
+        dist.init_process_group(backend="nccl",init_method='env://')
         device = torch.device("cuda")
     else:
-        dist.init_process_group("gloo")
+        dist.init_process_group(backend="gloo",init_method='env://')
         device = torch.device("cpu")
-
+        
+    print("Get parallel run data")
     # Get parallel run data
     rank_id = int(os.environ["RANK"])
     num_ranks = int(os.environ["WORLD_SIZE"])
