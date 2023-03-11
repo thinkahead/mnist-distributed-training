@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Get parallel run data
     rank_id = int(os.environ["RANK"])
     num_ranks = int(os.environ["WORLD_SIZE"])
-    master_addr = os.environ["MASTER_ADDR"]
+    master_addr = "my-master" # os.environ["MASTER_ADDR"]
     master_port = os.environ["MASTER_PORT"]
 
     print("rank_id",rank_id,"num_ranks",num_ranks,"master_addr",master_addr,"master_port",master_port)
