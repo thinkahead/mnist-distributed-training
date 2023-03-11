@@ -62,12 +62,14 @@ if __name__ == "__main__":
     print("Choosing backend")
     # Choose backend to be used
     if torch.cuda.is_available():
+        print("nccl cuda")
         # dist.init_process_group(backend="nccl",init_method='env://')
-        dist.init_process_group(backend="nccl",init_method='tcp://'+master_addr+':'+str(master_port),rank=rand_id, world_size=num_ranks)
+        dist.init_process_group(backend="nccl",init_method='tcp://'+master_addr+':'+str(master_port),rank=rank_id, world_size=num_ranks)
         device = torch.device("cuda")
     else:
+        print("gloo cpu")
         # dist.init_process_group(backend="gloo",init_method='env://')
-        dist.init_process_group(backend="gloo",init_method='tcp://'+master_addr+':'+str(master_port),rank=rand_id, world_size=num_ranks)
+        dist.init_process_group(backend="gloo",init_method='tcp://'+master_addr+':'+str(master_port),rank=rank_id, world_size=num_ranks)
         device = torch.device("cpu")
     
     # Data loaders
