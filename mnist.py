@@ -48,22 +48,28 @@ seed = 0
 # %% Main program
 
 if __name__ == "__main__":
-    print("Choosing backend")
-    # Choose backend to be used
-    if torch.cuda.is_available():
-        dist.init_process_group(backend="nccl",init_method='env://')
-        device = torch.device("cuda")
-    else:
-        dist.init_process_group(backend="gloo",init_method='env://')
-        device = torch.device("cpu")
         
     print("Get parallel run data")
     # Get parallel run data
     rank_id = int(os.environ["RANK"])
     num_ranks = int(os.environ["WORLD_SIZE"])
+    master_addr = os.environ["MASTER_ADDR"]
+    master_port = os.environ["MASTER_PORT"]
 
+    print("rank_id",rank_id,"num_ranks",num_ranks,"master_addr",master_addr,"master_port",master_port)
     torch.manual_seed(rank_id)
-
+    
+    print("Choosing backend")
+    # Choose backend to be used
+    if torch.cuda.is_available():
+        # dist.init_process_group(backend="nccl",init_method='env://')
+        dist.init_process_group(backend="nccl",init_method='tcp://'+master_addr+':'+str(master_port),rank=rand_id, world_size=num_ranks)
+        device = torch.device("cuda")
+    else:
+        # dist.init_process_group(backend="gloo",init_method='env://')
+        dist.init_process_group(backend="gloo",init_method='tcp://'+master_addr+':'+str(master_port),rank=rand_id, world_size=num_ranks)
+        device = torch.device("cpu")
+    
     # Data loaders
     scratch_dir = "/data/.cache/pytorch"
 
