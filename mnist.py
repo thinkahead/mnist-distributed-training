@@ -175,4 +175,17 @@ if __name__ == "__main__":
 
     print("Total training time with '%d' ranks: %f" % (num_ranks, t_end - t_start))
 
+    if rank_id==0:
+        model.eval()
+        torch.save(model, '/tmp/mnist.pt')
+
+        dummy_input = torch.randn(1, 1, 28, 28)
+        input_names = [ "input_0" ]
+        output_names = [ "output_0" ]
+        dynamic_axes={'input_0' : {0 : 'batch_size'},'output_0' : {0 : 'batch_size'}}
+
+        torch.onnx.export(model, dummy_input, '/tmp/mnist3.onnx', verbose=True, input_names=input_names, output_names=output_names, dynamic_axes=dynamic_axes)
+        print("Exported to /tmp/mnist3.onnx")
+
+
 # %% End of program
