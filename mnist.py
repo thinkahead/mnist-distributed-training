@@ -178,14 +178,30 @@ if __name__ == "__main__":
     if rank_id==0:
         model.eval()
         torch.save(model, '/tmp/mnist.pt')
+        modelfile = '/tmp/mnist3.onnx'
 
         dummy_input = torch.randn(1, 1, 28, 28).to(device)
         input_names = [ "input_0" ]
         output_names = [ "output_0" ]
         dynamic_axes={'input_0' : {0 : 'batch_size'},'output_0' : {0 : 'batch_size'}}
 
-        torch.onnx.export(model, dummy_input, '/tmp/mnist3.onnx', verbose=True, input_names=input_names, output_names=output_names, dynamic_axes=dynamic_axes)
-        print("Exported to /tmp/mnist3.onnx")
+        torch.onnx.export(model, dummy_input, modelfile, verbose=True, input_names=input_names, output_names=output_names, dynamic_axes=dynamic_axes)
+        print("Exported to "+modelfile)
 
+        import os
+        import boto3
+        from boto3 import session
+    
+        key_id = os.environ.get('AWS_ACCESS_KEY_ID')
+        secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+        endpoint_url = os.environ.get('AWS_S3_ENDPOINT')
+        uploaded_file_name = os.environ.get('OUTPUT_PATH',os.uname()[1])
+        session = boto3.session.Session(aws_access_key_id=key_id, aws_secret_access_key=secret_key)
+        s3_client = boto3.client('s3', aws_access_key_id=key_id, aws_secret_access_key=secret_key,endpoint_url=endpoint_url,verify=False)
+        buckets=s3_client.list_buckets()
+        for bucket in buckets['Buckets']: print(bucket['Name'])
+        s3_client.upload_file(modelfile, bucket['Name'],uploaded_file_name)
+        print('uploaded_file_name',uploaded_file_name)
+        print([item.get("Key") for item in s3_client.list_objects_v2(Bucket=bucket['Name']).get("Contents")])
 
 # %% End of program
