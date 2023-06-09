@@ -179,7 +179,7 @@ if __name__ == "__main__":
         model.eval()
         torch.save(model, '/tmp/mnist.pt')
 
-        dummy_input = torch.randn(1, 1, 28, 28)
+        dummy_input = torch.randn(1, 1, 28, 28).to(device)
         input_names = [ "input_0" ]
         output_names = [ "output_0" ]
         dynamic_axes={'input_0' : {0 : 'batch_size'},'output_0' : {0 : 'batch_size'}}
